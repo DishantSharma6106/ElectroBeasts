@@ -17,7 +17,10 @@ class DeviceQuery(BaseModel):
     brightness: str = ""
     battery: str = ""
     brand: str = ""
-
+# Add this route to check if the server is working
+@app.get("/")
+def read_root():
+    return{"message":Hello,World! Your API is working."}
 NANO_REVIEW_BASE_URL = "https://nanoreview.net/en/search?q="
 
 def fetch_device_info(query):
