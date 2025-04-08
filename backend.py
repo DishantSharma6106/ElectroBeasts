@@ -1,3 +1,11 @@
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello World"}
+
 from flask import Flask, request, jsonify import requests from bs4 import BeautifulSoup
 
 app = Flask(name)
