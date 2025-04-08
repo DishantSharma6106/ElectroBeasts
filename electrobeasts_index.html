@@ -27,6 +27,8 @@
       font-size: 1rem;
       margin-top: 20px;
       cursor: pointer;
+      border-radius: 8px;
+      border: none;
     }
     .form-section {
       padding: 30px;
@@ -44,11 +46,11 @@
     button[type="submit"] {
       padding: 10px 20px;
       font-size: 1rem;
-      cursor: pointer;
       border: none;
+      border-radius: 8px;
       background-color: #1f1c2c;
       color: white;
-      border-radius: 8px;
+      cursor: pointer;
     }
     .device-results {
       display: flex;
@@ -82,3 +84,62 @@
     <div class="form-group"><input type="text" name="processor" placeholder="Processor"/></div>
     <div class="form-group"><input type="text" name="gpu" placeholder="GPU (e.g. Adreno 820)"/></div>
     <div class="form-group"><input type="text" name="ram" placeholder="RAM"/></div>
+    <div class="form-group"><input type="text" name="storage" placeholder="Storage"/></div>
+    <div class="form-group"><input type="text" name="refresh_rate" placeholder="Refresh Rate"/></div>
+    <div class="form-group"><input type="text" name="antutu" placeholder="Minimum AnTuTu Score"/></div>
+    <div class="form-group"><input type="text" name="geekbench" placeholder="Minimum Geekbench Score"/></div>
+    <div class="form-group"><input type="text" name="camera" placeholder="Camera Sensor"/></div>
+    <div class="form-group"><input type="text" name="brightness" placeholder="Brightness (nits)"/></div>
+    <div class="form-group"><input type="text" name="battery" placeholder="Battery (mAh)"/></div>
+    <div class="form-group"><input type="text" name="brand" placeholder="Brand"/></div>
+    <button type="submit">Search Devices</button>
+  </form>
+</div>
+
+<div class="device-results" id="results"></div>
+
+<script>
+  function showForm() {
+    document.getElementById("thumbnail").style.display = "none";
+    document.getElementById("form-section").style.display = "block";
+  }
+
+  document.getElementById("specForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((val, key) => data[key] = val);
+
+    fetch("http://localhost:8000/api/search-devices", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+      const results = document.getElementById("results");
+      results.innerHTML = "";
+
+      if (res.device) {
+        const device = res.device;
+        const card = document.createElement("div");
+        card.className = "device-card";
+        card.innerHTML = `
+          <img src="${device.image_url}" />
+          <h4>${device.name}</h4>
+          <p><strong>Price:</strong> ${device.price}</p>
+        `;
+        results.appendChild(card);
+      } else {
+        results.innerHTML = `<p>No matching device found.</p>`;
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching device:", err);
+      document.getElementById("results").innerHTML = `<p>Error fetching device data.</p>`;
+    });
+  });
+</script>
+
+</body>
+</html>
