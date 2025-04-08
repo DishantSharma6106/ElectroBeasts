@@ -1,41 +1,58 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
+import requests
+from bs4 import BeautifulSoup
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello World"}
-
-from flask import Flask, request, jsonify import requests from bs4 import BeautifulSoup
-
-app = Flask(name)
-
 NANO_REVIEW_BASE_URL = "https://nanoreview.net/en/search?q="
 
-def fetch_device_info(query): search_url = NANO_REVIEW_BASE_URL + query.replace(" ", "+") response = requests.get(search_url) if response.status_code != 200: return None
+class DeviceQuery(BaseModel):
+    processor: str = ""
+    gpu: str = ""
+    ram: str = ""
+    storage: str = ""
+    refresh_rate: str = ""
+    antutu: str = ""
+    geekbench: str = ""
+    camera: str = ""
+    brightness: str = ""
+    battery: str = ""
+    brand: str = ""
 
-soup = BeautifulSoup(response.text, 'html.parser')
-device_list = soup.find_all('div', class_='device-card')
-if not device_list:
-    return None
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to ElectroBeasts"}
 
-first_device = device_list[0]
-name = first_device.find('h3').text.strip()
-price = first_device.find('span', class_='price').text.strip() if first_device.find('span', class_='price') else "Not available"
-image_url = first_device.find('img')['src'] if first_device.find('img') else ""
+def fetch_device_info(query: str):
+    search_url = NANO_REVIEW_BASE_URL + query.replace(" ", "+")
+    response = requests.get(search_url)
+    if response.status_code != 200:
+        return None
 
-return {
-    "name": name,
-    "price": price,
-    "image_url": image_url
-}
+    soup = BeautifulSoup(response.text, 'html.parser')
+    device_list = soup.find_all('div', class_='device-card')
+    if not device_list:
+        return None
 
-@app.route('/search_device', methods=['POST']) def search_device(): data = request.json query = f"{data.get('processor', '')} {data.get('gpu', '')} {data.get('ram', '')} {data.get('storage', '')} {data.get('refresh_rate', '')} {data.get('antutu', '')} {data.get('geekbench', '')} {data.get('camera', '')} {data.get('brightness', '')} {data.get('battery', '')} {data.get('brand', '')}"
+    first_device = device_list[0]
+    name = first_device.find('h3').text.strip()
+    price_tag = first_device.find('span', class_='price')
+    image_tag = first_device.find('img')
 
-device_info = fetch_device_info(query)
-if device_info:
-    return jsonify(device_info)
-else:
-    return jsonify({"error": "No matching device found"}), 404
+    price = price_tag.text.strip() if price_tag else "Not available"
+    image_url = image_tag['src'] if image_tag else ""
 
-if name == 'main': app.run(debug=True)
+    return {
+        "name": name,
+        "price": price,
+        "image_url": image_url
+    }
+
+@app.post("/search_device")
+def search_device(data: DeviceQuery):
+    query = f"{data.processor} {data.gpu} {data.ram} {data.storage} {data.refresh_rate} {data.antutu} {data.geekbench} {data.camera} {data.brightness} {data.battery} {data.brand}"
+    device_info = fetch_device_info(query)
+    if device_info:
+        return device_info
+    return {"error": "No matching device found"}
