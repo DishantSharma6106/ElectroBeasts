@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import requests
 from bs4 import BeautifulSoup
@@ -18,10 +18,10 @@ class DeviceQuery(BaseModel):
     battery: str = ""
     brand: str = ""
 
-# Root endpoint to confirm the server is live
+# Corrected route definition
 @app.get("/")
-def home():
-    return {"message": "ElectroBeasts backend is running!"}
+async def root():
+    return {"message": "Server is running"}
 
 NANO_REVIEW_BASE_URL = "https://nanoreview.net/en/search?q="
 
