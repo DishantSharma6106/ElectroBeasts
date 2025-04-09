@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
 import requests
 from bs4 import BeautifulSoup
 
 app = FastAPI()
+
+# Mount static folder for favicon and other assets
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 class DeviceQuery(BaseModel):
     processor: str = ""
