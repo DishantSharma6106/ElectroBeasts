@@ -1,13 +1,19 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pydantic import BaseModel
 import requests
 from bs4 import BeautifulSoup
+import os
 
 app = FastAPI()
 
-# Mount static folder for favicon and other assets
+# Serve the static HTML frontend
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+async def root():
+    return FileResponse("static/index.html")
 
 class DeviceQuery(BaseModel):
     processor: str = ""
@@ -21,10 +27,6 @@ class DeviceQuery(BaseModel):
     brightness: str = ""
     battery: str = ""
     brand: str = ""
-
-@app.get("/")
-async def root():
-    return {"message": "Server is running"}
 
 NANO_REVIEW_BASE_URL = "https://nanoreview.net/en/search?q="
 
