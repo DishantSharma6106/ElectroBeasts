@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from pydantic import BaseModel
 import requests
 from bs4 import BeautifulSoup
@@ -18,7 +18,6 @@ class DeviceQuery(BaseModel):
     battery: str = ""
     brand: str = ""
 
-# Corrected route definition
 @app.get("/")
 async def root():
     return {"message": "Server is running"}
