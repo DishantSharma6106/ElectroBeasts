@@ -2,8 +2,11 @@ services:
   - type: web
     name: ElectroBeasts
     runtime: python
+    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python backend.py
+    # Bind to the port Render injects. The old config ran `python backend.py`,
+    # which never started a server.
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PORT
-        value: 10000
+      - key: PYTHON_VERSION
+        value: "3.12"

@@ -2,144 +2,267 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ElectroBeasts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElectroBeasts — Hunt the beast in electronics</title>
   <style>
+    :root {
+      --bg: #14111f;
+      --panel: #1f1c2c;
+      --panel-2: #2a2640;
+      --accent: #8b7bff;
+      --accent-2: #00d4b1;
+      --text: #f2f1f7;
+      --muted: #a6a2c0;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: white;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
-    .thumbnail {
+    a { color: var(--accent); }
+    .hero {
+      min-height: 60vh;
       display: flex;
-      height: 100vh;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      background: linear-gradient(to right, #1f1c2c, #928dab);
-      color: white;
-    }
-    .thumbnail h1 {
-      font-size: 2.5rem;
-    }
-    .start-button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      margin-top: 20px;
-      cursor: pointer;
-      border-radius: 8px;
-      border: none;
-    }
-    .form-section {
-      padding: 30px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    button[type="submit"] {
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      background-color: #1f1c2c;
-      color: white;
-      cursor: pointer;
-    }
-    .device-results {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      padding: 20px;
-    }
-    .device-card {
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 15px;
-      width: 200px;
       text-align: center;
-      box-shadow: 2px 2px 10px #eee;
+      padding: 48px 20px;
+      background: radial-gradient(1200px 500px at 50% -10%, #3a2f70 0%, var(--bg) 60%);
     }
-    .device-card img {
-      max-width: 100%;
-      border-radius: 8px;
+    .hero h1 { font-size: clamp(2rem, 6vw, 3.4rem); margin: 0 0 8px; letter-spacing: -1px; }
+    .hero p { color: var(--muted); font-size: 1.1rem; max-width: 620px; margin: 0 0 28px; }
+    .btn {
+      border: none; cursor: pointer; border-radius: 10px;
+      padding: 12px 24px; font-size: 1rem; font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #100e1a;
+      transition: transform .12s ease, box-shadow .12s ease;
     }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(139,123,255,.35); }
+    .btn.secondary { background: var(--panel-2); color: var(--text); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 64px; }
+    .card-panel { background: var(--panel); border-radius: var(--radius); padding: 24px; }
+    h2 { margin-top: 0; }
+    form .grid {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    label { display: block; font-size: .82rem; color: var(--muted); margin-bottom: 6px; }
+    input {
+      width: 100%; padding: 11px 12px; font-size: .95rem;
+      border: 1px solid #3a3556; border-radius: 10px;
+      background: var(--panel-2); color: var(--text);
+    }
+    input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    .form-actions { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .meta { color: var(--muted); font-size: .9rem; margin: 24px 0 12px; }
+    .results { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .device {
+      background: var(--panel); border: 1px solid #2c2742; border-radius: var(--radius);
+      padding: 16px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .device img { width: 100%; height: 150px; object-fit: contain; background: #fff; border-radius: 10px; }
+    .device h3 { margin: 0; font-size: 1.05rem; }
+    .price { color: var(--accent-2); font-weight: 700; }
+    .specs { list-style: none; padding: 0; margin: 0; font-size: .82rem; color: var(--muted); display: grid; gap: 3px; }
+    .score-bar { height: 8px; background: var(--panel-2); border-radius: 6px; overflow: hidden; }
+    .score-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    .score-label { font-size: .78rem; color: var(--muted); display: flex; justify-content: space-between; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { font-size: .68rem; background: var(--panel-2); color: var(--accent); padding: 3px 8px; border-radius: 999px; }
+    .compare-row { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: .9rem; }
+    th, td { border: 1px solid #2c2742; padding: 10px; text-align: left; }
+    th { background: var(--panel-2); }
+    .hidden { display: none; }
+    .empty { color: var(--muted); padding: 24px; text-align: center; }
+    footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 24px; }
   </style>
 </head>
 <body>
+  <section class="hero">
+    <h1>🐉 ElectroBeasts</h1>
+    <p>Tell us the specs you care about — we'll rank the beasts that match. Performance, battery, camera, brightness and more.</p>
+    <button class="btn" onclick="document.getElementById('finder').scrollIntoView({behavior:'smooth'})">Start Hunting</button>
+  </section>
 
-<div class="thumbnail" id="thumbnail">
-  <h1>Choose the beast in electronics</h1>
-  <button class="start-button" onclick="showForm()">Start Hunting</button>
-</div>
+  <div class="wrap">
+    <div class="card-panel" id="finder">
+      <h2>Find your beast</h2>
+      <p class="meta">Leave fields blank to ignore them. Numbers can be loose (e.g. “12GB”, “120 Hz”). Empty form = top performers.</p>
+      <form id="specForm">
+        <div class="grid">
+          <div><label>Brand</label><input name="brand" placeholder="Samsung, Apple…" /></div>
+          <div><label>Processor</label><input name="processor" placeholder="Snapdragon 8 Gen 3" /></div>
+          <div><label>GPU</label><input name="gpu" placeholder="Adreno 750" /></div>
+          <div><label>RAM (GB)</label><input name="ram" placeholder="12" /></div>
+          <div><label>Storage (GB)</label><input name="storage" placeholder="256" /></div>
+          <div><label>Refresh rate (Hz)</label><input name="refresh_rate" placeholder="120" /></div>
+          <div><label>AnTuTu</label><input name="antutu" placeholder="2000000" /></div>
+          <div><label>Geekbench</label><input name="geekbench" placeholder="7000" /></div>
+          <div><label>Camera (MP)</label><input name="camera" placeholder="50" /></div>
+          <div><label>Brightness (nits)</label><input name="brightness" placeholder="2000" /></div>
+          <div><label>Battery (mAh)</label><input name="battery" placeholder="5000" /></div>
+          <div><label>Max results</label><input name="limit" type="number" min="1" max="20" value="6" /></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="submit">Search Devices</button>
+          <button class="btn secondary" type="button" id="compareBtn">Compare selected</button>
+        </div>
+      </form>
+    </div>
 
-<div class="form-section" id="form-section" style="display:none;">
-  <form id="specForm">
-    <div class="form-group"><input type="text" name="processor" placeholder="Processor"/></div>
-    <div class="form-group"><input type="text" name="gpu" placeholder="GPU (e.g. Adreno 820)"/></div>
-    <div class="form-group"><input type="text" name="ram" placeholder="RAM"/></div>
-    <div class="form-group"><input type="text" name="storage" placeholder="Storage"/></div>
-    <div class="form-group"><input type="text" name="refresh_rate" placeholder="Refresh Rate"/></div>
-    <div class="form-group"><input type="text" name="antutu" placeholder="Minimum AnTuTu Score"/></div>
-    <div class="form-group"><input type="text" name="geekbench" placeholder="Minimum Geekbench Score"/></div>
-    <div class="form-group"><input type="text" name="camera" placeholder="Camera Sensor"/></div>
-    <div class="form-group"><input type="text" name="brightness" placeholder="Brightness (nits)"/></div>
-    <div class="form-group"><input type="text" name="battery" placeholder="Battery (mAh)"/></div>
-    <div class="form-group"><input type="text" name="brand" placeholder="Brand"/></div>
-    <button type="submit">Search Devices</button>
-  </form>
-</div>
+    <div class="card-panel" style="margin-top: 24px;">
+      <h2>Add a new beast from NanoReview</h2>
+      <p class="meta">Type in the brand and model name of any smartphone to instantly pull real-time specifications from NanoReview (e.g. "Apple", "iPhone 16 Pro Max" or "Samsung", "Galaxy S25 Ultra").</p>
+      <form id="importForm">
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+          <div><label>Brand</label><input name="importBrand" id="importBrand" placeholder="e.g. Apple, Samsung, OnePlus" required /></div>
+          <div><label>Model</label><input name="importModel" id="importModel" placeholder="e.g. iPhone 16 Pro Max, 13, Galaxy S25 Ultra" required /></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="submit" id="importSubmitBtn" style="background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #100e1a;">Import Phone</button>
+        </div>
+      </form>
+      <p id="importStatus" class="meta" style="margin-top: 12px; font-weight: 500;"></p>
+    </div>
 
-<div class="device-results" id="results"></div>
+    <p class="meta" id="summary"></p>
+    <div class="results" id="results"></div>
+    <div id="compareArea"></div>
+  </div>
 
-<script>
-  function showForm() {
-    document.getElementById("thumbnail").style.display = "none";
-    document.getElementById("form-section").style.display = "block";
-  }
+  <footer>ElectroBeasts · spec-based device finder</footer>
 
-  document.getElementById("specForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = {};
-    formData.forEach((val, key) => data[key] = val);
+  <script>
+    const resultsEl = document.getElementById("results");
+    const summaryEl = document.getElementById("summary");
+    const selected = new Set();
 
-    fetch("/api/search-devices", {
-      method: "POST",
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(res => {
-      const results = document.getElementById("results");
-      results.innerHTML = "";
+    function specList(d) {
+      return `
+        <ul class="specs">
+          <li>⚡ ${d.processor} · ${d.gpu}</li>
+          <li>🧠 ${d.ram_gb}GB RAM · ${d.storage_gb}GB</li>
+          <li>📱 ${d.refresh_rate_hz}Hz · ${d.brightness_nits} nits</li>
+          <li>📸 ${d.camera_mp}MP · 🔋 ${d.battery_mah}mAh</li>
+          <li>🏆 AnTuTu ${d.antutu.toLocaleString()} · GB ${d.geekbench}</li>
+        </ul>`;
+    }
 
-      if (res.device) {
-        const device = res.device;
-        const card = document.createElement("div");
-        card.className = "device-card";
-        card.innerHTML = `
-          <img src="${device.image_url}" />
-          <h4>${device.name}</h4>
-          <p><strong>Price:</strong> ${device.price}</p>
-        `;
-        results.appendChild(card);
-      } else {
-        results.innerHTML = `<p>No matching device found.</p>`;
+    function deviceCard(item) {
+      const d = item.device;
+      const score = Math.round(item.match_score);
+      const chips = (item.matched_on || []).map(m => `<span class="chip">${m}</span>`).join("");
+      const card = document.createElement("div");
+      card.className = "device";
+      card.innerHTML = `
+        <img src="${d.image_url}" alt="${d.name}" onerror="this.style.display='none'" />
+        <h3>${d.name}</h3>
+        <div class="price">$${d.price_usd.toLocaleString()}</div>
+        <div class="score-label"><span>Match</span><span>${score}%</span></div>
+        <div class="score-bar"><div class="score-fill" style="width:${score}%"></div></div>
+        <div class="chips">${chips}</div>
+        ${specList(d)}
+        <label class="compare-row"><input type="checkbox" data-name="${d.name}" /> Compare</label>`;
+      card.querySelector("input[type=checkbox]").addEventListener("change", (e) => {
+        e.target.checked ? selected.add(d.name) : selected.delete(d.name);
+      });
+      return card;
+    }
+
+    document.getElementById("specForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      data.limit = parseInt(data.limit || "6", 10);
+      resultsEl.innerHTML = "<p class='empty'>Hunting…</p>";
+      try {
+        const res = await fetch("/api/search-devices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+        summaryEl.textContent = `${json.count} result(s) · criteria: ${json.query_used}`;
+        resultsEl.innerHTML = "";
+        if (!json.results.length) {
+          resultsEl.innerHTML = "<p class='empty'>No matching beasts found.</p>";
+          return;
+        }
+        json.results.forEach(item => resultsEl.appendChild(deviceCard(item)));
+      } catch (err) {
+        console.error(err);
+        resultsEl.innerHTML = "<p class='empty'>Error fetching devices.</p>";
       }
-    })
-    .catch(err => {
-      console.error("Error fetching device:", err);
-      document.getElementById("results").innerHTML = `<p>Error fetching device data.</p>`;
     });
-  });
-</script>
 
+    document.getElementById("importForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const brand = document.getElementById("importBrand").value.trim();
+      const model = document.getElementById("importModel").value.trim();
+      const statusEl = document.getElementById("importStatus");
+      const submitBtn = document.getElementById("importSubmitBtn");
+      
+      statusEl.textContent = "Fetching and parsing from NanoReview... Please wait.";
+      statusEl.style.color = "var(--accent)";
+      submitBtn.disabled = true;
+      
+      try {
+        const res = await fetch(`/api/import-device?brand=${encodeURIComponent(brand)}&model=${encodeURIComponent(model)}`, {
+          method: "POST"
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.detail || "Failed to import device.");
+        }
+        const device = await res.json();
+        statusEl.textContent = `Success! Imported "${device.name}" (AnTuTu: ${device.antutu.toLocaleString()}, RAM: ${device.ram_gb}GB, Battery: ${device.battery_mah}mAh). It is now available in your hunt list!`;
+        statusEl.style.color = "var(--accent-2)";
+        document.getElementById("importForm").reset();
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = `Error: ${err.message}`;
+        statusEl.style.color = "#ff6b6b";
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    document.getElementById("compareBtn").addEventListener("click", async () => {
+      const area = document.getElementById("compareArea");
+      if (selected.size < 2) { area.innerHTML = "<p class='empty'>Select at least 2 devices to compare.</p>"; return; }
+      const res = await fetch("/api/compare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ names: [...selected].slice(0, 4) }),
+      });
+      const json = await res.json();
+      const rows = [
+        ["Price", d => "$" + d.price_usd.toLocaleString()],
+        ["Processor", d => d.processor],
+        ["GPU", d => d.gpu],
+        ["RAM", d => d.ram_gb + "GB"],
+        ["Storage", d => d.storage_gb + "GB"],
+        ["Refresh rate", d => d.refresh_rate_hz + "Hz"],
+        ["AnTuTu", d => d.antutu.toLocaleString()],
+        ["Geekbench", d => d.geekbench],
+        ["Camera", d => d.camera_mp + "MP"],
+        ["Brightness", d => d.brightness_nits + " nits"],
+        ["Battery", d => d.battery_mah + "mAh"],
+      ];
+      let html = "<h2>Comparison</h2><table><tr><th>Spec</th>" +
+        json.devices.map(d => `<th>${d.name}</th>`).join("") + "</tr>";
+      rows.forEach(([label, fn]) => {
+        html += `<tr><td>${label}</td>` + json.devices.map(d => `<td>${fn(d)}</td>`).join("") + "</tr>";
+      });
+      html += "</table>";
+      area.innerHTML = html;
+      area.scrollIntoView({ behavior: "smooth" });
+    });
+  </script>
 </body>
 </html>
